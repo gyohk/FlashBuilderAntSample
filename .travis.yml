@@ -1,0 +1,34 @@
+language: objective-c
+before_script:
+- brew update
+- brew install ant adobe-air-sdk
+- AIR_VERSION=`ls -F /usr/local/Cellar/adobe-air-sdk/ | grep /`
+- export AIR_HOME=/usr/local/Cellar/adobe-air-sdk/${AIR_VERSION}libexec
+- AIR_PLAYER_VERSION=`ls ${AIR_HOME}/frameworks/libs/player/`
+- brew install caskroom/cask/brew-cask
+- brew cask install flash-player-debugger
+- export FLASHPLAYER_DEBUGGER="$HOME/Applications/Flash Player Debugger.app/Contents/MacOS/Flash
+  Player Debugger"
+- wget -O flex_sdk.zip http://mirrors.gigenet.com/apache/flex/4.13.0/binaries/apache-flex-sdk-4.13.0-bin.zip
+- unzip -q flex_sdk.zip -d flex_sdk
+- export FLEX_HOME="$TRAVIS_BUILD_DIR/flex_sdk"
+- echo env.PLAYERGLOBAL_HOME=libs/player > flex_sdk/env.properties
+- mkdir -p flex_sdk/frameworks/libs/player/11.1/
+- mkdir -p flex_sdk/frameworks/libs/player/${AIR_PLAYER_VERSION}/
+- cp -fr ${AIR_HOME}/frameworks/libs/player/${AIR_PLAYER_VERSION}/playerglobal.swc
+  flex_sdk/frameworks/libs/player/11.1/playerglobal.swc
+- cp -fr ${AIR_HOME}/frameworks/libs/player/${AIR_PLAYER_VERSION}/playerglobal.swc
+  flex_sdk/frameworks/libs/player/${AIR_PLAYER_VERSION}/playerglobal.swc
+- chmod +x ${FLEX_HOME}/bin/*
+script:
+- ant test
+- ant asdoc
+- ant swf
+- ant air
+env:
+  global:
+  - secure: POq9eGoaeMnygQrVcmY3shEmim174zYnTKtj1gZYAm2rsBeYy7NoolacVpfY+b9fe6usuCi+nb4c30H2YeqoBq5AGUzS389ktIs9p1KPzAkwD/XfED/FXf9LdR99GXez2uzFwy9OQe9CgxJttgnfmiYjjfXwB3Zq9EJRkaw1q0U=
+  - secure: LjNbJXbt+EgA2oOEFZ7RFe9GFBjaINqZFtdW3iAmzHF52c+yhvn1mejr5FH6DHZlWcnBUz0hgD5FuOff9S/DqBg4FugmyMN4yhM0fE66p89tu4qqePPlvnQ0uRso4Tz0VyASi1whpLRN89z4Y2vDYtkNeaJKbo2nby4m2bzaIsg=
+before_install:
+- brew install gnupg
+- gpg --decrypt-file --passphrase $super_secret_password keys/key.p12.gpg

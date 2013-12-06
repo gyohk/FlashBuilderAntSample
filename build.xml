@@ -1,0 +1,152 @@
+<project name="TravisAS3AntExample" default="compile" basedir="." >
+	<!-- To upper case -->
+	<scriptdef language="javascript" name="upper">
+		<attribute name="string" /> 
+		<attribute name="to" />
+		project.setProperty(attributes.get("to"),attributes.get("string").toUpperCase());
+	</scriptdef>
+
+	<!-- To lower case -->
+	<scriptdef language="javascript" name="lower">
+		<attribute name="string" /> 
+		<attribute name="to" />
+		project.setProperty(attributes.get("to"),attributes.get("string").toLowerCase());
+	</scriptdef>
+
+	<dirname property="PROJECT_FULLPATH" file="ant.file"/>
+	<description>
+		TravisAS3AntExample
+	</description>
+	
+	<!-- Flex ant setup -->
+	<property environment="env"/>
+	<property name="FLASHPLAYER_DEBUGGER" value="${env.FLASHPLAYER_DEBUGGER}" />
+	<property name="FLEX_HOME" value="${env.FLEX_HOME}" />
+	<echo message="FLEX_HOME path is ${FLEX_HOME}." />
+	<property name="AIR_HOME" value="${env.AIR_HOME}" />
+	<echo message="AIR_HOME path is ${AIR_HOME}." />
+	<property file="build.properties" description="build configuration."/>
+	
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	<taskdef resource="flexUnitTasks.tasks">
+		<classpath>
+			<fileset dir="libs/flexunit/">
+				<include name="flexUnitTasks*.jar" />
+			</fileset>
+		</classpath>
+	</taskdef>
+	
+	<!-- Test for dependencies and changes -->
+	<target name="init">
+		<uptodate property="nochanges_flash" targetfile="${build.dir}/${document_class.name}.swf">
+			<srcfiles dir="${src.dir}" includes="**/**"/>
+		</uptodate>
+		
+		<uptodate property="nochanges_template" targetfile="${build.dir}/index.html">
+			<srcfiles dir="${template.dir}" includes="**/**"/>
+		</uptodate>
+
+		<condition property="build.exists">
+			<available file="${build.dir}" type="dir"/>
+		</condition>
+	</target>
+	
+	<!-- Create the build folder for project -->
+	<target name="make_build">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${asdoc.dir}"/>
+	</target>
+
+	<!-- Copy template folder to build -->
+	<target name="make_template" depends="make_build" unless="nochanges_template">
+		<copy todir="${build.dir}">
+			<fileset dir="${template.dir}">
+				<include name="**/css/**"/>
+				<include name="**/images/**"/>
+				<include name="**/js/**"/>
+				<include name="*.html"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Compile SWF to build -->
+	<target name="swf" depends="make_template" unless="nochanges_flash">
+		<lower string="${document_class.name}" to="document_class.name.lower" />
+		<mxmlc 
+			file="${src.dir}/${document_class.name}.as" 
+			output="${build.dir}/${document_class.name.lower}.swf"
+			actionscript-file-encoding="UTF-8"
+			optimize="true"
+			>
+			
+			<!-- Get default compiler options. Hand modified to remove extraneous Flex trash -->
+			<!-- <load-config filename="ant/config.xml"/> -->
+			
+			<!-- List of path elements that form the roots of ActionScript class hierarchies. -->
+			<source-path path-element="${FLEX_HOME}/frameworks" />
+			<source-path path-element="${src.dir}" />
+			
+			<!-- List of SWC files or directories that contain SWC files. -->
+			<compiler.library-path dir="${libs.dir}" append="true">
+				<include name="**/*.swc" />
+			</compiler.library-path>
+
+			<!-- Flags -->
+			<compiler.debug>false</compiler.debug>
+		</mxmlc>
+	</target>
+
+	<!-- Now create the AIR package using the ADT utility -->
+	<target name="air" description="Create the AIR package" depends="compile">
+		<lower string="${document_class.name}" to="document_class.name.lower" />
+		
+		<exec executable="${AIR_HOME}/bin/adt" failonerror="true">
+			<arg line="-package" />
+			<arg line="-tsa none" />
+			<arg line="-storetype pkcs12" />
+			<arg line="-keystore ${airkey.dir}/${airkey.name}" />
+			<arg line="-storepass ${env.AIR_KEY_PASSWORD}" />
+			<arg line="${build.dir}/${document_class.name.lower}.air" />
+			<arg line="${src.dir}/${document_class.name}-app.xml" />
+			<arg line="-C ${build.dir} ${document_class.name.lower}.swf" />
+		</exec>
+	</target>
+
+	<!-- Create ASDoc files -->
+	<target name="asdoc" depends="make_build">
+		<exec executable="${FLEX_HOME}/bin/aasdoc" failonerror="true">
+			<arg line='-source-path ${src.dir}'/>
+			<arg line='-doc-sources ${src.dir}'/>
+			<arg line='-window-title "API Documents"'/>
+			<arg line='-output ${asdoc.dir}'/>
+		</exec>
+	</target> 
+	
+	<!-- Execute FlexUnit tests and publish reports -->
+	<target name="test" depends="compile">
+		<flexunit 
+			player="flash" 
+			command="${FLASHPLAYER_DEBUGGER}"
+			workingDir="${build.dir}" 
+			toDir="${build.dir}" 
+			haltonfailure="false" 
+			verbose="true" 
+			localTrusted="true">
+			<source dir="${src.dir}" />
+			<testSource dir="${test.src.dir}">
+				<include name="**/*Test.as" />
+			</testSource>
+			<library dir="${libs.dir}" />
+		</flexunit>
+	</target>
+	
+	<!-- Cleanup -->
+	<target name="clean" depends="init" if="build.exists">
+		<delete dir="${build.dir}" />
+		<delete dir="${asdoc.dir}" />
+	</target>
+
+	<!-- Compile SWF -->
+	<target name="compile" depends="init, swf" />
+
+</project>
