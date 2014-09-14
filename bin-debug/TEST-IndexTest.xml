@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testsuite name="IndexTest" tests="3" failures="1" errors="1" skipped="1" time="0.053" hostname="itako16044.miso" timestamp="2014-09-14T14:26:58">
+  <testcase classname="IndexTest" name="testSampleIgnore" time="0.000">
+    <skipped/>
+  </testcase>
+  <testcase classname="IndexTest" name="testSampleError" time="0.035">
+    <error message="ERROR! - This is an error" type="IndexTest.testSampleError"><![CDATA[Error: ERROR! - This is an error
+	at IndexTest/testSampleError()
+	at Function/http://adobe.com/AS3/2006/builtin::apply()
+	at flex.lang.reflect::Method/apply()
+	at org.flexunit.runners.model::FrameworkMethod/invokeExplosively()
+	at org.flexunit.internals.runners.statements::InvokeMethod/evaluate()
+	at org.flexunit.internals.runners.statements::StackAndFrameManagement/handleTimerComplete()
+	at flash.events::EventDispatcher/dispatchEventFunction()
+	at flash.events::EventDispatcher/dispatchEvent()
+	at flash.utils::Timer/tick()]]></error>
+  </testcase>
+  <testcase classname="IndexTest" name="testSampleFailure" time="0.018">
+    <failure message="FAIL! - This is a sample test that will fail." type="IndexTest.testSampleFailure"><![CDATA[FAIL! - This is a sample test that will fail.
+	at org.flexunit::Assert$/fail()
+	at IndexTest/testSampleFailure()
+	at Function/http://adobe.com/AS3/2006/builtin::apply()
+	at flex.lang.reflect::Method/apply()
+	at org.flexunit.runners.model::FrameworkMethod/invokeExplosively()
+	at org.flexunit.internals.runners.statements::InvokeMethod/evaluate()
+	at org.flexunit.internals.runners.statements::StackAndFrameManagement/handleTimerComplete()
+	at flash.events::EventDispatcher/dispatchEventFunction()
+	at flash.events::EventDispatcher/dispatchEvent()
+	at flash.utils::Timer/tick()]]></failure>
+  </testcase>
+</testsuite>
