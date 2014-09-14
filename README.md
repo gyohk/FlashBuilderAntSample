@@ -1,6 +1,6 @@
-FlashBuilderAntSample
+travisci-actionscript-ant-sample
 =====================
-[![Build Status](https://travis-ci.org/gyohk/FlashBuilderAntSample.png?branch=master)](https://travis-ci.org/gyohk/FlashBuilderAntSample)
+[![Build Status](https://travis-ci.org/gyohk/travisci-actionscript-ant-sample.png?branch=master)](https://travis-ci.org/gyohk/travisci-actionscript-ant-sample)
 
 antでいろいろやるサンプルです。
 
@@ -16,3 +16,6 @@ antも中々使いどころがないなあ、という感想です。
 なお、FlexPMDは開発が続いているのか不明だったので、含めていません。
 
 コンパイル、ASDOCとFlexUnitのみです。
+
+http://gyohk.github.io/travisci-actionscript-ant-sample
+

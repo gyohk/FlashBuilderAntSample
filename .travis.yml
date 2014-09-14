@@ -25,10 +25,16 @@ script:
 - ant asdoc
 - ant swf
 - ant air
+after_success:
+- git add -f bin-debug
+- git commit -m "ghpages test"
+- git push --quiet --force https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${TRAVIS_REPO_SLUG}.git
+  HEAD:gh-pages
 env:
   global:
   - secure: POq9eGoaeMnygQrVcmY3shEmim174zYnTKtj1gZYAm2rsBeYy7NoolacVpfY+b9fe6usuCi+nb4c30H2YeqoBq5AGUzS389ktIs9p1KPzAkwD/XfED/FXf9LdR99GXez2uzFwy9OQe9CgxJttgnfmiYjjfXwB3Zq9EJRkaw1q0U=
   - secure: LjNbJXbt+EgA2oOEFZ7RFe9GFBjaINqZFtdW3iAmzHF52c+yhvn1mejr5FH6DHZlWcnBUz0hgD5FuOff9S/DqBg4FugmyMN4yhM0fE66p89tu4qqePPlvnQ0uRso4Tz0VyASi1whpLRN89z4Y2vDYtkNeaJKbo2nby4m2bzaIsg=
+  - secure: UyBWFH4yfQ4aZbZyZT+ijgDnp4DeWmoQt9vzUCU+DygMkmiObObPEL9MRfgnSnMl7SwlhnZNP/anCW0Ob4na90geGbo8f89GD4Ps7nIIcDqbHk+BcFfIKvkfvJQ82r8DzWDo76jDZPlEf10DC9V1Hacm+gQeVA+NlngzTW9t3jg=
 before_install:
 - brew install gnupg
 - gpg --decrypt-file --passphrase $super_secret_password keys/key.p12.gpg
